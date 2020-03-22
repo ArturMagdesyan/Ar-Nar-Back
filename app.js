@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000;
 
-app.use(express.static(__dirname + "/dist"));
+app.use(express.static(__dirname + "/public"));
 // body-parser
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
