@@ -1,3 +1,5 @@
+const _ = require('lodash');
+const deleteImage = require('../components/deleteImage');
 const ProductAPI = require('../database/models/product');
 const upload = require('../components/upload');
 
@@ -19,7 +21,7 @@ module.exports = {
             };
             res.status(200).send(response);
         } catch (e) {
-            res.status(500).send({ message: 'Get product'});
+            res.status(500).send({ message: 'Error get product'});
         }
     },
 
@@ -40,7 +42,7 @@ module.exports = {
             };
             res.status(200).send(response);
         } catch (e) {
-            res.status(500).send({ message: 'Get filter products'});
+            res.status(500).send({ message: 'Error get filter products'});
         }
     },
 
@@ -50,7 +52,7 @@ module.exports = {
             const product = await ProductAPI.getProduct(id);
             res.status(201).send(product);
         } catch (e) {
-            res.status(500).send({ message: 'Get product for id'});
+            res.status(500).send({ message: 'Error get product for id'});
         }
     },
 
@@ -71,7 +73,6 @@ module.exports = {
                 await product.save();
                 res.status(201).send(product);
             });
-
         } catch (e) {
             res.status(500).send({ message: e.message});
         }
@@ -98,17 +99,22 @@ module.exports = {
 
 
         } catch (e) {
-            res.status(500).send({ message: 'Update product'});
+            res.status(500).send({ message: 'Error update product'});
         }
     },
 
     async deletedProduct(req, res) {
         try {
-            const id = req.params.id;
-            await ProductAPI.deletedProduct(id);
+            const productId = req.params.id;
+            const product = await ProductAPI.getProduct(productId);
+            const images = _.get(product, 'images');
+            images.forEach(img => {
+                deleteImage(img.name);
+            });
+            await ProductAPI.deletedProduct(productId);
             res.status(200).send({ message: 'Deleted product'});
         } catch (e) {
-            res.status(500).send({ message: 'Deleted product'});
+            res.status(500).send({ message: 'Error deleted product'});
         }
     },
 
@@ -119,28 +125,50 @@ module.exports = {
             const product = await ProductAPI.getProduct(productId);
             const images = product.images;
             const index = images.findIndex(img => img._id == imageId);
+            deleteImage(images[index].name);
             images.splice(index, 1);
             await product.save();
             res.status(200).send({ message: 'Deleted product image'});
         } catch (e) {
-            res.status(500).send({ message: 'Deleted product image'});
+            res.status(500).send({ message: 'Error deleted product image'});
         }
     },
 
     async imageBase(req, res) {
         try {
-            const productId = req.params.productId;
-            const imageId = req.params.imageId;
+            const productId = _.get(req, 'params.productId');
+            const imageId = _.get(req,'params.imageId');
+            const bagItemId = _.get(req, 'params.bagItemId');
             const product = await ProductAPI.getProduct(productId);
-            const images = product.images;
+            const images = _.get(product, 'images');
             images.forEach((image) => {
-                if (image._id == imageId) return image.base = true;
-                image.base = false;
+                if (image.bagItemId == bagItemId) {
+                    image.base = image._id == imageId;
+                }
             });
             await product.save();
-            res.status(200).send({ message: 'Product base image save'});
+            res.status(200).send({ data: { images: images}, message: 'Product base image save'});
         } catch (e) {
             res.status(500).send({ message: 'Error product base image'});
+        }
+    },
+
+    async productImageColor(req, res) {
+        try {
+            const productId = _.get(req, 'params.productId');
+            const imageId = _.get(req, 'params.imageId');
+            const bagItemId = _.get(req, 'params.bagItemId');
+            const product = await ProductAPI.getProduct(productId);
+            const images = _.get(product, 'images');
+            images.forEach((image) => {
+                if (image._id == imageId) {
+                    image.bagItemId = bagItemId;
+                }
+            });
+            await product.save();
+            res.status(200).send({ message: 'Product image color save'});
+        } catch (e) {
+            res.status(500).send({ message: 'Error product image color save'});
         }
     }
 };

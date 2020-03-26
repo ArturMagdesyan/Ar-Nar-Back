@@ -21,16 +21,23 @@ const ProductSchema = new mongoose.Schema({
     },
     onlyQuantity: {
         type: Boolean
-
     },
+    bag: [
+        {
+            quantity: Number,
+            size: String,
+            colors: [String],
+            price: Number,
+            percentOff: Number,
+        }
+        ],
     productCode: String,
-    quantitySize: [{ quantity: Number, size: String}],
-    quantity: Number,
-    color: [String],
-    price: Number,
     byOrder: Number,
-    percentOff: Number,
-    images: [{ name: String, base: { type: Boolean, default: false, required: true }}],
+    images: [{
+        name: String,
+        bagItemId: { type: mongoose.ObjectId, default: null },
+        base: { type: Boolean, default: false, required: true }
+    }],
 });
 
 

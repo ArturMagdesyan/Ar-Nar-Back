@@ -40,8 +40,9 @@ router.post('/product', ProductController.addProduct);
 router.post('/products-filter', ProductController.filterProducts);
 router.delete('/product/:id', ProductController.deletedProduct);
 router.put('/product/:id', ProductController.updateProduct);
-router.delete('/product/image/:productId/:imageId', ProductController.imageDelete);
-router.put('/product/image/:productId/:imageId', ProductController.imageBase);
+router.delete('/product/image-delete/:productId/:imageId', ProductController.imageDelete);
+router.put('/product/image-base/:productId/:imageId/:bagItemId', ProductController.imageBase);
+router.put('/product/image-color/:productId/:imageId/:bagItemId', ProductController.productImageColor);
 // colors routes
 router.get('/colors', ColorController.getColors);
 router.get('/color/:id', ColorController.getColor);

@@ -11,13 +11,13 @@ module.exports = {
     },
 
     async getProductsFilter(filter) {
-        console.log(filter);
         try {
             return await SchemaProduct.find(filter);
         } catch (e) {
             console.log(e)
         }
     },
+
     async getProduct(id) {
         try {
             return await SchemaProduct.findOne({ _id: id });
@@ -27,14 +27,12 @@ module.exports = {
     },
 
     async addProduct(product) {
-        return await SchemaProduct(
-            product
-        );
+        return await SchemaProduct(product);
     },
 
     async updateProduct(id, product) {
         try {
-            await SchemaProduct.updateOne({ _id: id }, product, { upsert: true });
+            await SchemaProduct.updateOne({ _id: id }, product);
         } catch (e) {
             console.log(e);
         }
