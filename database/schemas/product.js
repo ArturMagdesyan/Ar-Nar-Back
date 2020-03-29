@@ -33,6 +33,7 @@ const ProductSchema = new mongoose.Schema({
         ],
     productCode: String,
     byOrder: Number,
+    genderId: Number,
     images: [{
         name: String,
         bagItemId: { type: mongoose.ObjectId, default: null },
